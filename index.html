@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>轨道交通出口导视生成器</title>
+    <meta name="description" content="自定义制作类重庆轨道交通出口指示牌" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <p class="eyebrow">RAIL TRANSIT EXIT SIGN EDITOR</p>
+            <h1>轨道交通出口导视制作器</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="text-button" id="resetBtn" type="button">重置示例</button>
+          <button class="primary-button" id="downloadBtn" type="button"><span class="button-icon">↓</span><span id="downloadLabel">导出 PNG</span></button>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="control-panel" aria-label="编辑设置">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">DESIGN PANEL</p>
+              <h2>牌面设置</h2>
+            </div>
+            <span class="live-dot"><i></i>实时预览</span>
+          </div>
+
+          <section class="form-section">
+            <div class="section-label-row"><h3>主标题</h3><span>01</span></div>
+            <label class="field-label" for="stationInput">出口编号</label>
+            <input id="stationInput" class="text-input title-input" type="text" maxlength="12" value="2/3" />
+            <p class="field-hint">支持输入组合编号，例如 2/3、1A、4B</p>
+            <div class="range-field">
+              <div class="range-label"><label for="titleSizeRange">顶部数字大小</label><output id="titleSizeValue">170px</output></div>
+              <input id="titleSizeRange" type="range" min="170" max="240" step="1" value="170" />
+              <div class="range-scale"><span>默认</span><span>标准</span><span>大</span></div>
+            </div>
+            <div class="range-field">
+              <div class="range-label"><label for="destinationSizeRange">目的地字号</label><output id="destinationSizeValue">30px</output></div>
+              <input id="destinationSizeRange" type="range" min="18" max="42" step="1" value="30" />
+              <div class="range-scale"><span>小</span><span>标准</span><span>大</span></div>
+            </div>
+          </section>
+
+          <section class="form-section compact-section">
+            <div class="section-label-row"><h3>箭头方向</h3><span>02</span></div>
+            <div class="segmented-control" id="arrowControl" role="group" aria-label="箭头方向">
+              <button type="button" data-arrow="left" class="segment active"><span class="arrow-mini left"></span>左</button>
+              <button type="button" data-arrow="right" class="segment"><span class="arrow-mini right"></span>右</button>
+            </div>
+          </section>
+
+          <section class="form-section compact-section">
+            <div class="section-label-row"><h3>文字对齐</h3><span>03</span></div>
+            <div class="segmented-control" id="alignControl" role="group" aria-label="文字对齐">
+              <button type="button" data-align="left" class="segment active"><span class="align-icon align-left"></span>左对齐</button>
+              <button type="button" data-align="right" class="segment"><span class="align-icon align-right"></span>右对齐</button>
+            </div>
+          </section>
+
+          <section class="form-section compact-section">
+            <div class="section-label-row"><h3>牌面宽度</h3><span>04</span></div>
+            <div class="segmented-control" id="widthModeControl" role="group" aria-label="牌面宽度模式">
+              <button type="button" data-width-mode="auto" class="segment active">自动适配</button>
+              <button type="button" data-width-mode="fixed" class="segment">固定宽度</button>
+            </div>
+            <div class="range-field fixed-width-field" hidden>
+              <div class="range-label"><label for="fixedWidthRange">固定宽度</label><output id="fixedWidthValue">360 px</output></div>
+              <input id="fixedWidthRange" type="range" min="320" max="1500" step="10" value="360" />
+              <div class="range-scale"><span>320</span><span>900</span><span>1500 px</span></div>
+            </div>
+          </section>
+
+          <section class="form-section exits-section">
+            <div class="section-label-row"><h3>出口与目的地</h3><span id="exitCount">02 个出口</span></div>
+            <div id="exitEditor" class="exit-editor"></div>
+            <button type="button" id="addExitBtn" class="outline-button full-button"><span>＋</span> 添加出口</button>
+          </section>
+        </aside>
+
+        <section class="preview-panel" aria-label="牌面预览">
+          <div class="preview-toolbar">
+            <div>
+              <p class="section-kicker">LIVE CANVAS</p>
+              <h2>牌面预览</h2>
+            </div>
+            <div class="preview-meta"><span class="meta-dot"></span><span id="previewStatus">已同步</span><span class="divider"></span><span>1 : 2.18</span></div>
+          </div>
+          <div id="exportStatus" class="export-status" hidden aria-live="polite">
+            <span>正在导出中</span><progress id="exportProgress" max="100" value="0"></progress><output id="exportProgressValue">0%</output>
+          </div>
+          <div class="canvas-wrap">
+            <div class="canvas-ruler ruler-top"><span>0</span><span>180</span><span>360 px</span></div>
+            <div class="canvas-ruler ruler-side"><span>0</span><span>240</span><span>480 px</span></div>
+            <div class="sign-stage">
+              <div id="signPreview" class="sign-preview align-left" role="img" aria-label="出口指示牌实时预览"></div>
+            </div>
+          </div>
+          <div class="preview-footer">
+            <div class="tip-block"><span class="tip-icon">!</span><span>修改左侧信息时，指示牌将即时更新</span></div>
+            <div class="format-badge">By ColaFrog</div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="icons.js"></script>
+    <script src="html-to-image.js"></script>
+    <script src="app.js?v=20261006t"></script>
+  </body>
+</html>

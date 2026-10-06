@@ -149,7 +149,7 @@ button { cursor: pointer; }
 .exit-info { min-width: 0; }
 .align-right .exit-layout { grid-template-columns: minmax(0, 1fr) max-content; text-align: right; }
 .align-right .exit-number { grid-column: 2; grid-row: 1; text-align: right; }
-.align-right .exit-info { grid-column: 1; grid-row: 1; }
+.align-right .exit-info { grid-column: 1; grid-row: 1; justify-self: end; }
 .exit-number, .number-chip, .mini-field .exit-num { font-family: "Frutiger 55 Roman", Frutiger, Arial, sans-serif; }
 .exit-number { min-width: max-content; display: inline-flex; align-items: baseline; font-size: clamp(58px, 20cqw, 90px); line-height: .78; font-weight: 400; letter-spacing: 0; transform: translateX(1px); white-space: nowrap; }
 .exit-number-glyph, .exit-number-slash { display: inline-block; line-height: .82; }
